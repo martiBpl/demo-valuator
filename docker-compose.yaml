@@ -1,11 +1,25 @@
 version: '3.9'
 
 services:
-  postgres:
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_started
+    restart: unless-stopped
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PASS=${DB_PASS}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - MIGRATION_CONTEXTS=${MIGRATION_CONTEXTS}
+  db:
     image: postgres:14-alpine
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=valuator_local_pass
-      - POSTGRES_USER=valuator_local_user
-      - POSTGRES_DB=valuator_local_db
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}

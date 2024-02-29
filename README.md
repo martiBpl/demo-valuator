@@ -10,7 +10,6 @@ Assuming docker environment is installed and working on your local machine.
 
 To reset the db simply run `docker-compose down` and `docker-compose up -d` again.
 
-
 ### DB Migrations
 All the required migrations will be executed on app startup. When the `MIGRATION_CONTEXTS` env variable will be set to `dev`
 (configured in `.env` file) the migration will add 4 example product records into the database:
@@ -48,3 +47,15 @@ The `infra` module is mainly for I/O operations (db repositories, external API c
 exposed by the `domain` module, the infra module implementations can be easily switchable to any other.
 The `app` module is the starting point of the application and its meant for exposing user interaction, REST API in this
 example. It contains all the required configuration.
+
+# App configuration
+The app is configured using `.env` file.
+
+Variables:
+```
+DB_HOST=db:5432 - database host - by default 'db' reletes to postgres service configured in the docker-compose.yaml 
+DB_NAME=valuator_local_db - database name
+DB_USER=valuator_local_user - database username
+DB_PASS=valuator_local_pass - database user password
+MIGRATION_CONTEXTS=dev - optional - liquibase migration contexts - if configured to 'dev' migration will add some default products into the database  
+```
