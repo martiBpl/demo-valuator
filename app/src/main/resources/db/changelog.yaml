@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - include:
+      file: migration/1709108317_create_product_table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: migration/1709108318_dev_product_seed.sql
+      context: dev
+      relativeToChangelogFile: true
+  - include:
+      file: migration/1709108319_create_product_discount_table.sql
+      context: dev
+      relativeToChangelogFile: true

@@ -1,1 +1,4 @@
 rootProject.name = 'valuator'
+include 'app'
+include 'infra:postgres-repository'
+include 'domain'
