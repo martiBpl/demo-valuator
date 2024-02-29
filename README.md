@@ -5,10 +5,11 @@ To be able to run/debug the application locally please follow the given steps.
     
 Assuming docker environment is installed and working on your local machine.
 
-1. From the root project folder run: `docker-compose up -d` This will start local postgres db
+1. From the root project folder run: `docker-compose -f docker-compose.db.yaml up -d` This will start local postgres db
 2. Copy `.env.dist` file to `.env` - it contains all required environmental variables configured for the docker-compose file.
 
-To reset the db simply run `docker-compose down` and `docker-compose up -d` again.
+To reset the db simply run `docker-compose -f docker-compose.db.yaml down` and 
+`docker-compose -f docker-compose.db.yaml up -d` again.
 
 ### DB Migrations
 All the required migrations will be executed on app startup. When the `MIGRATION_CONTEXTS` env variable will be set to `dev`
@@ -25,11 +26,19 @@ values
 ;
 ```
 
+# Building the app 
+To build the docker app container run `docker-compose up -d` it will try to directly connect to a configured db 
+(using `.env` file), so make sure the db (or the db docker container) is running before starting this one.
+
 # Assumptions
 - Prices are using max 2 decimal places,
 - Service does not support multi-currency,
 - Products are stored in internal database - most likely they would be synchronized from other services,
 - If a given product has multiple active discounts applied the service will pick the highest possible,
+- The product price is calculated depending on its possible discounts (stored in an internal database table),
+- At this stage contains two possible discount strategies - percentage based and quantity based,
+- Discount management was currently narrowed only to adding a discount for a given product,
+- The product does not have to be in the db to add a discount for it (no strict product to product-discount relation),
 - The service is calculating total amount and total discount amount based on the calculations:
 ```
 single price after discount = original item price - item discount
@@ -39,6 +48,49 @@ total discount =  original total amount - total price after discount
 
 Prices after multiplication are rounded to 2 decimal points.
 ```
+
+# API
+Swagger docs are available at:
+http://localhost:8080/swagger-ui/index.html
+
+The api exposes two REST endpoints:
+
+`/GET /product/{id}/price?quantity=x` where id is a UUID product id and x should be a number.
+
+The endpoint will return a calculated product price depending on configured discounts.
+
+`/POST /product/{id}/discount` 
+
+The endpoint creates a discount for a given product id (path param {id}), currently there are two strategies possible to add. 
+Example request body:
+```json
+{
+    "activeTo": "2024-03-03T00:00:00.000Z",
+    "strategy": {
+        "type": "quantity-based",
+        "thresholds": {
+            "2":"1",
+            "5": "50"
+        } 
+    } 
+}
+``` 
+or 
+```json
+{
+    "activeTo": "2024-03-03T00:00:00.000Z",
+    "strategy": {
+        "type": "fixed",
+        "percentage": "5"
+    } 
+}
+``` 
+# Discount strategies
+1. `FixedPercentageProductDiscountStrategy` will apply a fixed percentage for a given product not depending on the ordered quantity.
+
+2. `QuantityBasedProductDiscountStrategy` - a map of quantity thresholds to percentage. If the ordered quantity has 
+reached a given threshold a discount percentage is applied. The highest possible percentage is applied for quantity 
+overreaching more than one threshold.   
 
 # Project architecture
 Project is using hexagonal architecture, with 3 main modules: `domain` `app` and `infra`.
