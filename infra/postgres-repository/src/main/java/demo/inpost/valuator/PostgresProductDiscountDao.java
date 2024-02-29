@@ -25,4 +25,14 @@ public class PostgresProductDiscountDao implements ProductDiscountDao {
                 .map(ProductDiscountDbo::getStrategy)
                 .collect(Collectors.toList());
     }
+
+    public UUID addProductDiscount(UUID productId, Instant activeTo, ProductDiscountStrategy strategy) {
+        var dbo = ProductDiscountDbo.builder()
+                .productId(productId)
+                .strategy(strategy)
+                .activeTo(activeTo)
+                .build();
+        return productDiscountRepository.save(dbo).getId();
+    }
+
 }

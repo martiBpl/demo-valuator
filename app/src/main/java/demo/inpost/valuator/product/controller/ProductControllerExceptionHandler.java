@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +20,7 @@ import static java.lang.String.format;
 public class ProductControllerExceptionHandler {
 
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorDto> handleNotFound(HandlerMethodValidationException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorDto> handleValidationErrors(HandlerMethodValidationException ex, HttpServletRequest request) {
         String errorMessage = ex.getAllValidationResults().stream().flatMap(it -> it.getResolvableErrors().stream().map(MessageSourceResolvable::getDefaultMessage)).collect(Collectors.joining(". "));
         ErrorDto errorDto = new ErrorDto(errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
@@ -38,5 +39,9 @@ public class ProductControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
     }
 
-
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorDto> handleNotReadableRequest(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        ErrorDto errorDto = new ErrorDto(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
 }

@@ -7,10 +7,6 @@ plugins {
 group = 'demo.inpost'
 version = '0.0.1-SNAPSHOT'
 
-java {
-    sourceCompatibility = '17'
-}
-
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -19,6 +15,10 @@ configurations {
 allprojects {
     repositories {
         mavenCentral()
+    }
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

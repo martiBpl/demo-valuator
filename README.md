@@ -8,6 +8,9 @@ Assuming docker environment is installed and working on your local machine.
 1. From the root project folder run: `docker-compose up -d` This will start local postgres db
 2. Copy `.env.dist` file to `.env` - it contains all required environmental variables configured for the docker-compose file.
 
+To reset the db simply run `docker-compose down` and `docker-compose up -d` again.
+
+
 ### DB Migrations
 All the required migrations will be executed on app startup. When the `MIGRATION_CONTEXTS` env variable will be set to `dev`
 (configured in `.env` file) the migration will add 4 example product records into the database:
