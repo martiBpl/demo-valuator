@@ -14,6 +14,5 @@ import java.util.Map;
 @JsonTypeName
 public final class QuantityBasedProductDiscountStrategyForm implements ProductDiscountStrategyForm {
 
-    // todo @mb add validation
     private Map<BigDecimal, BigDecimal> thresholds;
 }

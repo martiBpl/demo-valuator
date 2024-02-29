@@ -30,7 +30,7 @@ values
 To build the docker app container run `docker-compose up -d` it will try to directly connect to a configured db 
 (using `.env` file), so make sure the db (or the db docker container) is running before starting this one.
 
-# Assumptions
+# My Assumptions
 - Prices are using max 2 decimal places,
 - Service does not support multi-currency,
 - Products are stored in internal database - most likely they would be synchronized from other services,
@@ -39,6 +39,7 @@ To build the docker app container run `docker-compose up -d` it will try to dire
 - At this stage contains two possible discount strategies - percentage based and quantity based,
 - Discount management was currently narrowed only to adding a discount for a given product,
 - The product does not have to be in the db to add a discount for it (no strict product to product-discount relation),
+- Since the core functionality is the price calculation I skipped the price discount form validation, 
 - The service is calculating total amount and total discount amount based on the calculations:
 ```
 single price after discount = original item price - item discount
